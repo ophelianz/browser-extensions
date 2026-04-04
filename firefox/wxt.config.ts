@@ -20,4 +20,13 @@ export default defineConfig({
             128: 'icon-128.png',
         },
     },
+    hooks: {
+        'build:manifestGenerated': (_, manifest) => {
+            manifest.browser_specific_settings ??= {};
+            manifest.browser_specific_settings.gecko ??= {};
+            manifest.browser_specific_settings.gecko.data_collection_permissions = {
+                required: ['none'],
+            };
+        },
+    },
 });
