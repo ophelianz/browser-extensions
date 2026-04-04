@@ -1,0 +1,20 @@
+{
+  "name": "ophelia-chrome",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .output .wxt",
+    "dev": "wxt",
+    "build": "bun run clean && wxt build",
+    "build:firefox": "bun run clean && wxt build -b firefox",
+    "zip": "wxt zip"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.29",
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "wxt": "^0.20.20"
+  }
+}

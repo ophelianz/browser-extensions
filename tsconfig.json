@@ -1,0 +1,34 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "strict": true,
+        "skipLibCheck": true,
+        "noEmit": true,
+        "typeRoots": [
+            "./chrome/node_modules/@types",
+            "./firefox/node_modules/@types"
+        ],
+        "types": ["chrome"],
+    },
+    "include": [
+        "chrome/src",
+        "chrome/.wxt/wxt.d.ts",
+        "chrome/.wxt/types",
+        "chrome/wxt.config.ts",
+        "chrome/tailwind.config.ts",
+        "firefox/src",
+        "firefox/.wxt/wxt.d.ts",
+        "firefox/.wxt/types",
+        "firefox/wxt.config.ts",
+        "firefox/tailwind.config.ts"
+    ],
+    "exclude": [
+        "chrome/node_modules",
+        "chrome/.output",
+        "firefox/node_modules",
+        "firefox/.output"
+    ]
+}
