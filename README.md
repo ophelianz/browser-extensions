@@ -1,10 +1,8 @@
 # browser extensions for ophelia
 
----
-
 build from source
 
-- chrome
+## chrome
 
 ```bash
 git clone https://github.com/ophelianz/browser-extensions.git
@@ -13,7 +11,7 @@ bun dev
 bun run build
 ```
 
-- firefox
+## firefox
 
 ```bash
 git clone https://github.com/ophelianz/browser-extensions.git
