@@ -87,12 +87,44 @@ async function checkConnection(port: number): Promise<boolean> {
     }
 }
 
-function renderStatus(connected: boolean): string {
-    const dot = connected
-        ? `<span class="inline-block w-2 h-2 rounded-full bg-accent mr-1.5"></span>`
-        : `<span class="inline-block w-2 h-2 rounded-full bg-destructive mr-1.5"></span>`;
-    const label = connected ? t('statusConnected') : t('statusNotRunning');
-    return `${dot}<span class="${connected ? 'text-accent' : 'text-destructive'}">${label}</span>`;
+function createElement<K extends keyof HTMLElementTagNameMap>(
+    tagName: K,
+    className?: string,
+    textContent?: string,
+): HTMLElementTagNameMap[K] {
+    const element = document.createElement(tagName);
+
+    if (className) element.className = className;
+    if (textContent !== undefined) element.textContent = textContent;
+
+    return element;
+}
+
+function setStatusContent(
+    statusEl: HTMLElement,
+    state: 'checking' | 'connected' | 'notRunning',
+): void {
+    statusEl.replaceChildren();
+
+    if (state === 'checking') {
+        statusEl.append(createElement('span', 'text-muted-fg', t('statusChecking')));
+        return;
+    }
+
+    const connected = state === 'connected';
+    const dot = createElement(
+        'span',
+        connected
+            ? 'inline-block h-2 w-2 rounded-full bg-accent mr-1.5'
+            : 'inline-block h-2 w-2 rounded-full bg-destructive mr-1.5',
+    );
+    const label = createElement(
+        'span',
+        connected ? 'text-accent' : 'text-destructive',
+        connected ? t('statusConnected') : t('statusNotRunning'),
+    );
+
+    statusEl.append(dot, label);
 }
 
 function getSwitchTrackClass(enabled: boolean): string {
@@ -115,76 +147,90 @@ function renderPopup(settings: Settings): void {
     document.title = extensionTitle;
     document.documentElement.lang = getUiLanguage();
 
-    root.innerHTML = `
-    <div class="w-[320px] p-4 space-y-4">
+    const container = createElement('div', 'w-[320px] p-4 space-y-4');
 
-      <div class="flex items-center justify-between gap-4">
-        <div class="flex items-center gap-2">
-          <img src="/icon-32.png" class="w-5 h-5" alt="${extensionTitle}" />
-          <span class="text-sm font-semibold tracking-tight">${extensionTitle}</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <div class="inline-flex min-h-8 items-center rounded-full border border-white/10 bg-surface px-2.5 py-1 text-xs" id="status">
-            <span class="text-muted-fg">${t('statusChecking')}</span>
-          </div>
-          <button
-            id="enabled-switch"
-            type="button"
-            role="switch"
-            aria-label="${t('enabledLabel')}"
-            aria-checked="${settings.enabled ? 'true' : 'false'}"
-            class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/30 ${getSwitchTrackClass(settings.enabled)}"
-          >
-            <span
-              id="enabled-switch-thumb"
-              class="pointer-events-none inline-block h-4 w-4 rounded-full shadow-sm transition-transform duration-200 ${getSwitchThumbClass(settings.enabled)}"
-            ></span>
-          </button>
-        </div>
-      </div>
+    const header = createElement('div', 'flex items-center justify-between gap-4');
+    const brand = createElement('div', 'flex items-center gap-2');
+    const logo = createElement('img', 'h-5 w-5') as HTMLImageElement;
+    logo.src = '/icon-32.png';
+    logo.alt = extensionTitle;
+    const title = createElement('span', 'text-sm font-semibold tracking-tight', extensionTitle);
+    brand.append(logo, title);
 
-      <div class="h-px bg-white/5"></div>
+    const headerControls = createElement('div', 'flex items-center gap-2');
+    const statusEl = createElement(
+        'div',
+        'inline-flex min-h-8 items-center rounded-full border border-white/10 bg-surface px-2.5 py-1 text-xs',
+    );
+    const enabledSwitch = createElement(
+        'button',
+        `relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/30 ${getSwitchTrackClass(settings.enabled)}`,
+    ) as HTMLButtonElement;
+    enabledSwitch.type = 'button';
+    enabledSwitch.setAttribute('role', 'switch');
+    enabledSwitch.setAttribute('aria-label', t('enabledLabel'));
+    enabledSwitch.setAttribute('aria-checked', settings.enabled ? 'true' : 'false');
 
-      <div>
-        <p class="text-xs font-semibold uppercase tracking-widest text-muted-fg mb-3">${t('connectionLabel')}</p>
-        <div class="bg-surface rounded-xl p-3 space-y-3">
-          <div class="flex items-center justify-between gap-3">
-            <label class="text-xs text-on-surface-alt" for="port-input">${t('portLabel')}</label>
-            <div class="flex items-center gap-2">
-              <input
-                id="port-input"
-                type="number"
-                min="1024"
-                max="65535"
-                value="${settings.port}"
-                class="w-24 bg-surface-alt border border-white/10 rounded-lg px-2.5 py-1 text-xs text-on-surface text-right focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/30 transition-colors"
-              />
-              <span class="text-xs text-muted-fg">${defaultPortText}</span>
-            </div>
-          </div>
-        </div>
-        <p class="mt-2 text-[11px] leading-relaxed text-muted-fg/90">${t('popupWarningMatch')}</p>
-      </div>
+    const enabledSwitchThumb = createElement(
+        'span',
+        `pointer-events-none inline-block h-4 w-4 rounded-full shadow-sm transition-transform duration-200 ${getSwitchThumbClass(settings.enabled)}`,
+    );
+    enabledSwitch.append(enabledSwitchThumb);
+    headerControls.append(statusEl, enabledSwitch);
+    header.append(brand, headerControls);
 
-      <div class="flex items-center gap-3">
-        <button
-          id="save-btn"
-          class="px-3 py-1.5 text-xs font-semibold bg-accent text-bg rounded-lg hover:bg-accent-dim transition-colors"
-        >
-          ${t('saveButton')}
-        </button>
-        <span id="save-feedback" class="text-xs text-muted-fg opacity-0 transition-opacity duration-300">${t('saveFeedback')}</span>
-      </div>
+    const divider = createElement('div', 'h-px bg-white/5');
 
-    </div>
-  `;
+    const connectionSection = createElement('div');
+    const connectionLabel = createElement(
+        'p',
+        'mb-3 text-xs font-semibold uppercase tracking-widest text-muted-fg',
+        t('connectionLabel'),
+    );
+    const connectionCard = createElement('div', 'bg-surface rounded-xl p-3 space-y-3');
+    const portRow = createElement('div', 'flex items-center justify-between gap-3');
+    const portLabel = createElement('label', 'text-xs text-on-surface-alt', t('portLabel'));
+    portLabel.htmlFor = 'port-input';
 
-    const portInput = document.getElementById('port-input') as HTMLInputElement;
-    const enabledSwitch = document.getElementById('enabled-switch') as HTMLButtonElement;
-    const enabledSwitchThumb = document.getElementById('enabled-switch-thumb') as HTMLSpanElement;
-    const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
-    const statusEl = document.getElementById('status')!;
-    const feedback = document.getElementById('save-feedback')!;
+    const portControls = createElement('div', 'flex items-center gap-2');
+    const portInput = createElement(
+        'input',
+        'w-24 rounded-lg border border-white/10 bg-surface-alt px-2.5 py-1 text-right text-xs text-on-surface transition-colors focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/30',
+    ) as HTMLInputElement;
+    portInput.id = 'port-input';
+    portInput.type = 'number';
+    portInput.min = '1024';
+    portInput.max = '65535';
+    portInput.value = String(settings.port);
+
+    const defaultPortLabel = createElement('span', 'text-xs text-muted-fg', defaultPortText);
+    portControls.append(portInput, defaultPortLabel);
+    portRow.append(portLabel, portControls);
+    connectionCard.append(portRow);
+
+    const helperText = createElement(
+        'p',
+        'mt-2 text-[11px] leading-relaxed text-muted-fg/90',
+        t('popupWarningMatch'),
+    );
+    connectionSection.append(connectionLabel, connectionCard, helperText);
+
+    const actionsRow = createElement('div', 'flex items-center gap-3');
+    const saveBtn = createElement(
+        'button',
+        'rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-bg transition-colors hover:bg-accent-dim',
+        t('saveButton'),
+    ) as HTMLButtonElement;
+    saveBtn.type = 'button';
+    const feedback = createElement(
+        'span',
+        'text-xs text-muted-fg opacity-0 transition-opacity duration-300',
+        t('saveFeedback'),
+    );
+    actionsRow.append(saveBtn, feedback);
+
+    container.append(header, divider, connectionSection, actionsRow);
+    root.replaceChildren(container);
     let savedSettings: Settings = { ...settings };
     let draftSettings: Settings = { ...settings };
 
@@ -199,13 +245,13 @@ function renderPopup(settings: Settings): void {
 
     async function refreshStatus() {
         if (!savedSettings.enabled) {
-            statusEl.innerHTML = renderStatus(false);
+            setStatusContent(statusEl, 'notRunning');
             return;
         }
 
-        statusEl.innerHTML = `<span class="text-muted-fg text-xs">${t('statusChecking')}</span>`;
+        setStatusContent(statusEl, 'checking');
         const ok = await checkConnection(savedSettings.port);
-        statusEl.innerHTML = renderStatus(ok);
+        setStatusContent(statusEl, ok ? 'connected' : 'notRunning');
     }
 
     syncDraftControls();
@@ -243,11 +289,9 @@ async function mount() {
         renderPopup(await loadSettings());
     } catch (error) {
         const root = document.getElementById('root')!;
-        root.innerHTML = `
-          <div class="w-[320px] min-h-[220px] p-4 flex items-center">
-            <p class="text-sm text-destructive">${t('loadError')}</p>
-          </div>
-        `;
+        const container = createElement('div', 'flex min-h-[220px] w-[320px] items-center p-4');
+        container.append(createElement('p', 'text-sm text-destructive', t('loadError')));
+        root.replaceChildren(container);
         console.error('Failed to load popup', error);
     }
 }
