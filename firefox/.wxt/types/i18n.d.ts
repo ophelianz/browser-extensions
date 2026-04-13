@@ -103,6 +103,16 @@ declare module "wxt/browser" {
       options?: GetMessageOptions,
     ): string;
     /**
+     * Label for the global interception toggle.
+     *
+     * "Intercept downloads"
+     */
+    getMessage(
+      messageName: "enabledLabel",
+      substitutions?: string | string[],
+      options?: GetMessageOptions,
+    ): string;
+    /**
      * The extension description shown in browser extension management UIs.
      *
      * "Intercept downloads and send them to Ophelia"
@@ -143,9 +153,9 @@ declare module "wxt/browser" {
       options?: GetMessageOptions,
     ): string;
     /**
-     * Warning shown below the port setting.
+     * Helper text shown below the port setting.
      *
-     * "Must match Ophelia setting."
+     * "Only change this if you changed Ophelia's port."
      */
     getMessage(
       messageName: "popupWarningMatch",
@@ -203,7 +213,7 @@ declare module "wxt/browser" {
       options?: GetMessageOptions,
     ): string;
     getMessage(
-      messageName: "@@extension_id" | "@@ui_locale" | "@@bidi_dir" | "@@bidi_reversed_dir" | "@@bidi_start_edge" | "@@bidi_end_edge" | "actionTitle" | "connectionLabel" | "defaultPortLabel" | "extDescription" | "extName" | "loadError" | "portLabel" | "popupWarningMatch" | "saveButton" | "saveFeedback" | "statusChecking" | "statusConnected" | "statusNotRunning",
+      messageName: "@@extension_id" | "@@ui_locale" | "@@bidi_dir" | "@@bidi_reversed_dir" | "@@bidi_start_edge" | "@@bidi_end_edge" | "actionTitle" | "connectionLabel" | "defaultPortLabel" | "enabledLabel" | "extDescription" | "extName" | "loadError" | "portLabel" | "popupWarningMatch" | "saveButton" | "saveFeedback" | "statusChecking" | "statusConnected" | "statusNotRunning",
       substitutions?: string | string[],
       options?: GetMessageOptions,
     ): string;
