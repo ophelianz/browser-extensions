@@ -5,6 +5,7 @@
   "scripts": {
     "clean": "rm -rf .output .wxt",
     "dev": "wxt",
+    "test": "bun test",
     "build": "bun run clean && wxt build",
     "build:firefox": "bun run clean && wxt build -b firefox",
     "zip": "wxt zip"

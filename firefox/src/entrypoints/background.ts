@@ -1,13 +1,17 @@
 import { defineBackground } from 'wxt/utils/define-background';
 
-const DEFAULT_PORT = 7373;
-let opheliaPort = DEFAULT_PORT;
+import { handleDownload } from '../lib/background-logic';
+import {
+    DEFAULT_SETTINGS,
+    resolveEnabled,
+    resolvePort,
+    resolveSettings,
+    type Settings,
+} from '../lib/settings';
+
+let settings: Settings = { ...DEFAULT_SETTINGS };
 const extensionBaseUrl = chrome.runtime.getURL('');
 const storageArea = chrome.storage.local;
-
-function resolvePort(value: unknown): number {
-    return typeof value === 'number' ? value : DEFAULT_PORT;
-}
 
 function createTimeoutSignal(timeoutMs: number): AbortSignal {
     const controller = new AbortController();
@@ -20,12 +24,76 @@ function createTimeoutSignal(timeoutMs: number): AbortSignal {
     return controller.signal;
 }
 
-storageArea.get({ port: DEFAULT_PORT }, ({ port }) => {
-    opheliaPort = resolvePort(port);
+async function loadPersistedSettings(): Promise<void> {
+    settings = await new Promise((resolve, reject) => {
+        storageArea.get(DEFAULT_SETTINGS, (result) => {
+            if (chrome.runtime.lastError) {
+                reject(new Error(chrome.runtime.lastError.message));
+                return;
+            }
+
+            resolve(resolveSettings(result));
+        });
+    });
+}
+
+async function isOpheliaAvailable(port: number): Promise<boolean> {
+    try {
+        const response = await fetch(`http://localhost:${port}/health`, {
+            signal: createTimeoutSignal(2000),
+        });
+
+        if (!response.ok) return false;
+
+        const body = (await response.json()) as { app?: unknown };
+        return body.app === 'ophelia';
+    } catch {
+        return false;
+    }
+}
+
+async function cancelDownload(downloadId: number): Promise<boolean> {
+    return new Promise((resolve) => {
+        chrome.downloads.cancel(downloadId, () => {
+            resolve(!chrome.runtime.lastError);
+        });
+    });
+}
+
+async function postDownload(
+    port: number,
+    payload: { url: string; filename: string },
+): Promise<boolean> {
+    try {
+        const response = await fetch(`http://localhost:${port}/download`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: createTimeoutSignal(3000),
+        });
+
+        return response.ok;
+    } catch {
+        return false;
+    }
+}
+
+async function redownload(payload: { url: string; filename: string }): Promise<void> {
+    await new Promise<void>((resolve) => {
+        chrome.downloads.download(payload, () => resolve());
+    });
+}
+
+const settingsReady = loadPersistedSettings().catch((error) => {
+    settings = { ...DEFAULT_SETTINGS };
+    console.error('Failed to load background settings, falling back to defaults.', error);
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === 'local' && changes.port) opheliaPort = resolvePort(changes.port.newValue);
+    if (areaName !== 'local') return;
+
+    if (changes.port) settings.port = resolvePort(changes.port.newValue);
+    if (changes.enabled) settings.enabled = resolveEnabled(changes.enabled.newValue);
 });
 
 // URLs we've explicitly handed back to the browser after Ophelia was unreachable.
@@ -34,35 +102,15 @@ const passThroughUrls = new Set<string>();
 
 export default defineBackground(() => {
     chrome.downloads.onCreated.addListener(async (item) => {
-        if (
-            item.url.startsWith('blob:') ||
-            item.url.startsWith('data:') ||
-            item.url.startsWith(extensionBaseUrl)
-        )
-            return;
-
-        if (passThroughUrls.has(item.url)) {
-            passThroughUrls.delete(item.url);
-            return;
-        }
-
-        chrome.downloads.cancel(item.id);
-
-        const filename =
-            item.filename ||
-            new URL(item.url).pathname.split('/').pop() ||
-            'download';
-
-        try {
-            await fetch(`http://localhost:${opheliaPort}/download`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: item.url, filename }),
-                signal: createTimeoutSignal(3000),
-            });
-        } catch {
-            passThroughUrls.add(item.url);
-            chrome.downloads.download({ url: item.url, filename });
-        }
+        await handleDownload(item, {
+            extensionBaseUrl,
+            passThroughUrls,
+            ensureSettingsReady: () => settingsReady,
+            getSettings: () => settings,
+            isOpheliaAvailable,
+            cancelDownload,
+            postDownload,
+            redownload,
+        });
     });
 });

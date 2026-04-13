@@ -17,6 +17,10 @@
             }
         }
     },
+    "enabledLabel": {
+        "message": "Intercept downloads",
+        "description": "Label for the global interception toggle."
+    },
     "extDescription": {
         "message": "Intercept downloads and send them to Ophelia",
         "description": "The extension description shown in browser extension management UIs."
@@ -34,8 +38,8 @@
         "description": "Label for the Ophelia port input."
     },
     "popupWarningMatch": {
-        "message": "Must match Ophelia setting.",
-        "description": "Warning shown below the port setting."
+        "message": "Only change this if you changed Ophelia's port.",
+        "description": "Helper text shown below the port setting."
     },
     "saveButton": {
         "message": "Save",
