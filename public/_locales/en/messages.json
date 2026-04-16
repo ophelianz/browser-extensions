@@ -1,15 +1,15 @@
 {
     "actionTitle": {
         "message": "Ophelia",
-        "description": "The extension title shown in the toolbar and popup."
+        "description": "The extension title shown in the toolbar and popup"
     },
     "connectionLabel": {
         "message": "Connection",
-        "description": "Heading for the popup connection settings section."
+        "description": "Heading for the popup connection settings section"
     },
     "defaultPortLabel": {
         "message": "default: $PORT$",
-        "description": "Label showing the default Ophelia port.",
+        "description": "Label showing the default Ophelia port",
         "placeholders": {
             "port": {
                 "content": "$1",
@@ -19,46 +19,46 @@
     },
     "enabledLabel": {
         "message": "Intercept downloads",
-        "description": "Label for the global interception toggle."
+        "description": "Label for the global interception toggle"
     },
     "extDescription": {
         "message": "Intercept downloads and send them to Ophelia",
-        "description": "The extension description shown in browser extension management UIs."
+        "description": "The extension description shown in browser extension management UIs"
     },
     "extName": {
         "message": "Ophelia",
-        "description": "The localized extension name."
+        "description": "The localized extension name"
     },
     "loadError": {
-        "message": "Couldn't load the popup. Check the extension console for details.",
-        "description": "Fallback error shown when the popup cannot initialize."
+        "message": "Couldn't load the popup. Check the extension console for details",
+        "description": "Fallback error shown when the popup cannot initialize"
     },
     "portLabel": {
         "message": "Port",
-        "description": "Label for the Ophelia port input."
+        "description": "Label for the Ophelia port input"
     },
     "popupWarningMatch": {
-        "message": "Only change this if you changed Ophelia's port.",
-        "description": "Helper text shown below the port setting."
+        "message": "Only change this if you changed Ophelia's port",
+        "description": "Helper text shown below the port setting"
     },
     "saveButton": {
         "message": "Save",
-        "description": "Label for the save button."
+        "description": "Label for the save button"
     },
     "saveFeedback": {
         "message": "Saved",
-        "description": "Confirmation message shown after saving settings."
+        "description": "Confirmation message shown after saving settings"
     },
     "statusChecking": {
         "message": "Checking…",
-        "description": "Status shown while testing the Ophelia connection."
+        "description": "Status shown while testing the Ophelia connection"
     },
     "statusConnected": {
         "message": "Connected",
-        "description": "Status shown when Ophelia is reachable."
+        "description": "Status shown when Ophelia is reachable"
     },
     "statusNotRunning": {
         "message": "Not running",
-        "description": "Status shown when Ophelia is unreachable."
+        "description": "Status shown when Ophelia is unreachable"
     }
 }

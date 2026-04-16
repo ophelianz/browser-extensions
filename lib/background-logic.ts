@@ -28,7 +28,10 @@ export type HandleDownloadDeps = {
     redownload: (payload: DownloadPayload) => Promise<void>;
 };
 
-export function isManagedByBrowser(url: string, extensionBaseUrl: string): boolean {
+export function isManagedByBrowser(
+    url: string,
+    extensionBaseUrl: string,
+): boolean {
     return (
         url.startsWith('blob:') ||
         url.startsWith('data:') ||
@@ -36,7 +39,9 @@ export function isManagedByBrowser(url: string, extensionBaseUrl: string): boole
     );
 }
 
-export function resolveDownloadFilename(item: Pick<DownloadItem, 'url' | 'filename'>): string {
+export function resolveDownloadFilename(
+    item: Pick<DownloadItem, 'url' | 'filename'>,
+): string {
     if (item.filename) return item.filename;
 
     try {
@@ -71,7 +76,10 @@ export async function handleDownload(
     const cancelled = await deps.cancelDownload(item.id);
     if (!cancelled) return 'browser';
 
-    const handedOff = await deps.postDownload(settings.port, { url: item.url, filename });
+    const handedOff = await deps.postDownload(settings.port, {
+        url: item.url,
+        filename,
+    });
     if (handedOff) return 'ophelia';
 
     deps.passThroughUrls.add(item.url);

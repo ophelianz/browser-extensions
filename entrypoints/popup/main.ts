@@ -107,7 +107,9 @@ function setStatusContent(
     statusEl.replaceChildren();
 
     if (state === 'checking') {
-        statusEl.append(createElement('span', 'text-muted-fg', t('statusChecking')));
+        statusEl.append(
+            createElement('span', 'text-muted-fg', t('statusChecking')),
+        );
         return;
     }
 
@@ -134,9 +136,7 @@ function getSwitchTrackClass(enabled: boolean): string {
 }
 
 function getSwitchThumbClass(enabled: boolean): string {
-    return enabled
-        ? 'translate-x-4 bg-bg'
-        : 'translate-x-0 bg-white';
+    return enabled ? 'translate-x-4 bg-bg' : 'translate-x-0 bg-white';
 }
 
 function renderPopup(settings: Settings): void {
@@ -149,12 +149,19 @@ function renderPopup(settings: Settings): void {
 
     const container = createElement('div', 'w-[320px] p-4 space-y-4');
 
-    const header = createElement('div', 'flex items-center justify-between gap-4');
+    const header = createElement(
+        'div',
+        'flex items-center justify-between gap-4',
+    );
     const brand = createElement('div', 'flex items-center gap-2');
     const logo = createElement('img', 'h-5 w-5') as HTMLImageElement;
     logo.src = '/icon-32.png';
     logo.alt = extensionTitle;
-    const title = createElement('span', 'text-sm font-semibold tracking-tight', extensionTitle);
+    const title = createElement(
+        'span',
+        'text-sm font-semibold tracking-tight',
+        extensionTitle,
+    );
     brand.append(logo, title);
 
     const headerControls = createElement('div', 'flex items-center gap-2');
@@ -169,7 +176,10 @@ function renderPopup(settings: Settings): void {
     enabledSwitch.type = 'button';
     enabledSwitch.setAttribute('role', 'switch');
     enabledSwitch.setAttribute('aria-label', t('enabledLabel'));
-    enabledSwitch.setAttribute('aria-checked', settings.enabled ? 'true' : 'false');
+    enabledSwitch.setAttribute(
+        'aria-checked',
+        settings.enabled ? 'true' : 'false',
+    );
 
     const enabledSwitchThumb = createElement(
         'span',
@@ -187,9 +197,19 @@ function renderPopup(settings: Settings): void {
         'mb-3 text-xs font-semibold uppercase tracking-widest text-muted-fg',
         t('connectionLabel'),
     );
-    const connectionCard = createElement('div', 'bg-surface rounded-xl p-3 space-y-3');
-    const portRow = createElement('div', 'flex items-center justify-between gap-3');
-    const portLabel = createElement('label', 'text-xs text-on-surface-alt', t('portLabel'));
+    const connectionCard = createElement(
+        'div',
+        'bg-surface rounded-xl p-3 space-y-3',
+    );
+    const portRow = createElement(
+        'div',
+        'flex items-center justify-between gap-3',
+    );
+    const portLabel = createElement(
+        'label',
+        'text-xs text-on-surface-alt',
+        t('portLabel'),
+    );
     portLabel.htmlFor = 'port-input';
 
     const portControls = createElement('div', 'flex items-center gap-2');
@@ -203,7 +223,11 @@ function renderPopup(settings: Settings): void {
     portInput.max = '65535';
     portInput.value = String(settings.port);
 
-    const defaultPortLabel = createElement('span', 'text-xs text-muted-fg', defaultPortText);
+    const defaultPortLabel = createElement(
+        'span',
+        'text-xs text-muted-fg',
+        defaultPortText,
+    );
     portControls.append(portInput, defaultPortLabel);
     portRow.append(portLabel, portControls);
     connectionCard.append(portRow);
@@ -236,11 +260,12 @@ function renderPopup(settings: Settings): void {
 
     function syncDraftControls() {
         portInput.value = String(draftSettings.port);
-        enabledSwitch.setAttribute('aria-checked', draftSettings.enabled ? 'true' : 'false');
-        enabledSwitch.className =
-            `relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/30 ${getSwitchTrackClass(draftSettings.enabled)}`;
-        enabledSwitchThumb.className =
-            `pointer-events-none inline-block h-4 w-4 rounded-full shadow-sm transition-transform duration-200 ${getSwitchThumbClass(draftSettings.enabled)}`;
+        enabledSwitch.setAttribute(
+            'aria-checked',
+            draftSettings.enabled ? 'true' : 'false',
+        );
+        enabledSwitch.className = `relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/30 ${getSwitchTrackClass(draftSettings.enabled)}`;
+        enabledSwitchThumb.className = `pointer-events-none inline-block h-4 w-4 rounded-full shadow-sm transition-transform duration-200 ${getSwitchThumbClass(draftSettings.enabled)}`;
     }
 
     async function refreshStatus() {
@@ -259,7 +284,8 @@ function renderPopup(settings: Settings): void {
 
     portInput.addEventListener('input', () => {
         const port = parseInt(portInput.value, 10);
-        if (Number.isInteger(port) && port >= 1024 && port <= 65535) draftSettings.port = port;
+        if (Number.isInteger(port) && port >= 1024 && port <= 65535)
+            draftSettings.port = port;
     });
 
     enabledSwitch.addEventListener('click', () => {
@@ -289,8 +315,13 @@ async function mount() {
         renderPopup(await loadSettings());
     } catch (error) {
         const root = document.getElementById('root')!;
-        const container = createElement('div', 'flex min-h-[220px] w-[320px] items-center p-4');
-        container.append(createElement('p', 'text-sm text-destructive', t('loadError')));
+        const container = createElement(
+            'div',
+            'flex min-h-[220px] w-[320px] items-center p-4',
+        );
+        container.append(
+            createElement('p', 'text-sm text-destructive', t('loadError')),
+        );
         root.replaceChildren(container);
         console.error('Failed to load popup', error);
     }

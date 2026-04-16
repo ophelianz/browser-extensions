@@ -23,7 +23,10 @@ export function resolveEnabled(value: unknown): boolean {
     return typeof value === 'boolean' ? value : DEFAULT_SETTINGS.enabled;
 }
 
-export function resolveSettings(value: { port?: unknown; enabled?: unknown }): Settings {
+export function resolveSettings(value: {
+    port?: unknown;
+    enabled?: unknown;
+}): Settings {
     return {
         port: resolvePort(value.port),
         enabled: resolveEnabled(value.enabled),

@@ -78,7 +78,10 @@ async function postDownload(
     }
 }
 
-async function redownload(payload: { url: string; filename: string }): Promise<void> {
+async function redownload(payload: {
+    url: string;
+    filename: string;
+}): Promise<void> {
     await new Promise<void>((resolve) => {
         chrome.downloads.download(payload, () => resolve());
     });
@@ -86,14 +89,18 @@ async function redownload(payload: { url: string; filename: string }): Promise<v
 
 const settingsReady = loadPersistedSettings().catch((error) => {
     settings = { ...DEFAULT_SETTINGS };
-    console.error('Failed to load background settings, falling back to defaults.', error);
+    console.error(
+        'Failed to load background settings, falling back to defaults.',
+        error,
+    );
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName !== 'local') return;
 
     if (changes.port) settings.port = resolvePort(changes.port.newValue);
-    if (changes.enabled) settings.enabled = resolveEnabled(changes.enabled.newValue);
+    if (changes.enabled)
+        settings.enabled = resolveEnabled(changes.enabled.newValue);
 });
 
 // URLs we've explicitly handed back to the browser after Ophelia was unreachable.

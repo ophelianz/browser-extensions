@@ -12,7 +12,9 @@ function createDeferred() {
     return { promise, resolve };
 }
 
-function createDeps(overrides: Partial<HandleDownloadDeps> = {}): HandleDownloadDeps {
+function createDeps(
+    overrides: Partial<HandleDownloadDeps> = {},
+): HandleDownloadDeps {
     const settings: Settings = { port: 7373, enabled: true };
 
     return {
@@ -99,7 +101,11 @@ describe('handleDownload', () => {
     it('hands off to Ophelia only after a successful cancel', async () => {
         const calls: string[] = [];
         const result = await handleDownload(
-            { id: 7, url: 'https://example.com/video.mp4', filename: 'video.mp4' },
+            {
+                id: 7,
+                url: 'https://example.com/video.mp4',
+                filename: 'video.mp4',
+            },
             createDeps({
                 isOpheliaAvailable: async () => {
                     calls.push('health');

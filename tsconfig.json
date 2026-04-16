@@ -1,11 +1,11 @@
 {
-  "extends": "./.wxt/tsconfig.json",
-  "compilerOptions": {
-    "strict": true,
-    "moduleResolution": "bundler",
-    "target": "ESNext",
-    "module": "ESNext",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["chrome", "bun-types"]
-  }
+    "extends": "./.wxt/tsconfig.json",
+    "compilerOptions": {
+        "strict": true,
+        "moduleResolution": "bundler",
+        "target": "ESNext",
+        "module": "ESNext",
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "types": ["chrome", "bun-types"],
+    },
 }
