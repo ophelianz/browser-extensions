@@ -1,21 +1,49 @@
-# browser extensions for ophelia
+# Browser Extensions For Ophelia
 
-build from source
+This repo now uses a single WXT project for both Chrome and Firefox.
 
-## chrome
+## Setup
 
 ```bash
-git clone https://github.com/ophelianz/browser-extensions.git
-cd browser-extensions/chrome
+bun install
+```
+
+## Development
+
+```bash
 bun dev
+```
+
+Firefox:
+
+```bash
+bun run dev:firefox
+```
+
+## Build
+
+Chrome:
+
+```bash
 bun run build
 ```
 
-## firefox
+Firefox:
 
 ```bash
-git clone https://github.com/ophelianz/browser-extensions.git
-cd browser-extensions/firefox
-bun dev
-bun run build
+bun run build:firefox
+```
+
+## Package
+
+Chrome ZIP:
+
+```bash
+bun run zip -- -b chrome
+```
+
+Firefox ZIP and source bundle:
+
+```bash
+bun run zip:firefox
 ```

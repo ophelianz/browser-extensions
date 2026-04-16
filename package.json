@@ -1,0 +1,34 @@
+{
+  "name": "ophelia-extension",
+  "description": "Ophelia browser extension",
+  "private": true,
+  "version": "0.1.1",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf output .wxt coverage",
+    "patch:wxt": "node ./scripts/patch-wxt.mjs",
+    "prepare:wxt": "bun run patch:wxt && wxt prepare",
+    "postinstall": "bun run prepare:wxt",
+    "dev": "bun run patch:wxt && wxt",
+    "dev:firefox": "bun run patch:wxt && wxt -b firefox",
+    "build": "bun run clean && bun run patch:wxt && wxt build",
+    "build:firefox": "bun run clean && bun run patch:wxt && wxt build -b firefox",
+    "zip": "bun run clean && bun run patch:wxt && wxt zip",
+    "zip:firefox": "bun run clean && bun run patch:wxt && wxt zip -b firefox",
+    "check": "bun run prepare:wxt && tsc --noEmit",
+    "lint": "eslint .",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.29",
+    "bun-types": "^1.3.11",
+    "autoprefixer": "^10.4.27",
+    "eslint": "^9.39.1",
+    "globals": "^16.4.0",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "wxt": "^0.20.22"
+  }
+}
